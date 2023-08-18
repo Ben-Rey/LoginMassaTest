@@ -72,6 +72,7 @@ function App() {
         onClick={async () => {
           login();
         }}
+        disabled={connected}
       >
         {connected ? "You are Connected" : "Connect"}
       </button>
