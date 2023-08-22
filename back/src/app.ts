@@ -64,9 +64,10 @@ app.post<MessageResponse>("/login", async (req, res) => {
   const client = await createClient();
 
   try {
-    const result = await client
-      .wallet()
-      .verifySignature(message, { base58Encoded: signature }, publicKey);
+    const result = await client.wallet().verifySignature(message, {
+      publicKey,
+      base58Encoded: signature,
+    });
 
     const responseMessage = result
       ? "Signature verified successfully!"
@@ -74,6 +75,7 @@ app.post<MessageResponse>("/login", async (req, res) => {
 
     res.status(200).send({ isValid: result, message: responseMessage });
   } catch (error) {
+    console.log("Error verifying signature: ", error);
     res.status(400).send({ message: "Error verifying signature!" });
   }
 });

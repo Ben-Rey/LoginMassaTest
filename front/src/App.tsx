@@ -1,7 +1,4 @@
 import { useEffect, useState } from "react";
-import { web3 } from "@hicaru/bearby.js";
-
-import "./App.css";
 import { IAccount, providers } from "@massalabs/wallet-provider";
 import { Client, ClientFactory } from "@massalabs/massa-web3";
 import axios from "axios";
@@ -12,16 +9,19 @@ const fakeSignature = {
     "1AEgQfNUKLktrNx2J4i5ri4wvHj2Pqn1cPT4HSfDdT5vMrjCkhDLacQoDwyTnZTBG7h3HEoYNSoYAhn8D7CayM7FswdubB",
 };
 
+import "./App.css";
+
 function App() {
   const [connected, setConnected] = useState(false);
   const [account, setAccount] = useState<IAccount>();
   const [client, setClient] = useState<Client>();
 
-  const setup = async () => {
+  const setup = async (walletName = "MASSASTATION") => {
     const wallets = await providers();
 
     const massaStationWallet = wallets.find(
-      (wallet) => wallet.name() === "MASSASTATION"
+      // (wallet) => wallet.name() === "BEARBY"
+      (wallet) => wallet.name() === walletName
     );
 
     const accounts = await massaStationWallet?.accounts();
@@ -45,10 +45,14 @@ function App() {
 
   const login = async () => {
     if (!client) return;
+    if (!account) return;
+
     const address = await client.wallet().getBaseAccount()?.address();
     if (!address) return;
-    // When it will be fixed you will use signatureWallet instead of fakeSignature
-    let signatureWallet = await client?.wallet().signMessage("Test", address!);
+
+    const signatureFromProvider = await client
+      .wallet()
+      .signMessage("Test", address);
 
     // we will use fake signature for now
     const res = await axios.post("http://localhost:3008/login", {
@@ -76,6 +80,9 @@ function App() {
       >
         {connected ? "You are Connected" : "Connect"}
       </button>
+
+      <button onClick={() => setup("BEARBY")}>Use Bearby</button>
+      <button onClick={() => setup("MASSASTATION")}>Use MassaStation</button>
     </>
   );
 }
