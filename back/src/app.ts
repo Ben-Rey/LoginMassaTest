@@ -3,10 +3,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
 // @ts-ignore
-import { sha256 } from "@noble/hashes/sha256";
 import { blake3 } from "@noble/hashes/blake3";
-
-import { bytesToHex as toHex } from "@noble/hashes/utils";
 
 import * as middlewares from "./middlewares";
 import api from "./api";
@@ -72,6 +69,7 @@ app.post<MessageResponse>("/login", async (req, res) => {
     res.status(400).send({ message: "No provider found!" });
   }
 
+  // This is a workaround for Bearby - we might need to remove this in the future
   if (provider === "BEARBY") {
     message = blake3(message);
   }
