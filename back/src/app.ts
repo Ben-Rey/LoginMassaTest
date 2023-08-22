@@ -2,6 +2,11 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
+// @ts-ignore
+import { sha256 } from "@noble/hashes/sha256";
+import { blake3 } from "@noble/hashes/blake3";
+
+import { bytesToHex as toHex } from "@noble/hashes/utils";
 
 import * as middlewares from "./middlewares";
 import api from "./api";
@@ -47,10 +52,13 @@ async function createClient() {
 }
 
 app.post<MessageResponse>("/login", async (req, res) => {
-  const { publicKey, message, signature } = req.body;
+  let { publicKey, message, signature, provider } = req.body;
+
   console.log("publicKey: ", publicKey);
   console.log("message: ", message);
   console.log("signature: ", signature);
+  console.log("providerName: ", provider);
+
   if (!publicKey) {
     res.status(400).send({ message: "No public key found!" });
   }
@@ -59,6 +67,13 @@ app.post<MessageResponse>("/login", async (req, res) => {
   }
   if (!signature) {
     res.status(400).send({ message: "No signature found!" });
+  }
+  if (!provider) {
+    res.status(400).send({ message: "No provider found!" });
+  }
+
+  if (provider === "BEARBY") {
+    message = blake3(message);
   }
 
   const client = await createClient();

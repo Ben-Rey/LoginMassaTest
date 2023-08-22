@@ -3,24 +3,17 @@ import { IAccount, providers } from "@massalabs/wallet-provider";
 import { Client, ClientFactory } from "@massalabs/massa-web3";
 import axios from "axios";
 
-const fakeSignature = {
-  publicKey: "P1xRRW7bpKLGuhqLoA5a12z8s1nLGffbJ8joPAkZzpkM4SESGhh",
-  signature:
-    "1AEgQfNUKLktrNx2J4i5ri4wvHj2Pqn1cPT4HSfDdT5vMrjCkhDLacQoDwyTnZTBG7h3HEoYNSoYAhn8D7CayM7FswdubB",
-};
-
 import "./App.css";
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [account, setAccount] = useState<IAccount>();
   const [client, setClient] = useState<Client>();
-
+  const [providerName, setProviderName] = useState<string>("BEARBY"); // ["BEARBY", "MASSASTATION"
   const setup = async (walletName = "MASSASTATION") => {
     const wallets = await providers();
 
     const massaStationWallet = wallets.find(
-      // (wallet) => wallet.name() === "BEARBY"
       (wallet) => wallet.name() === walletName
     );
 
@@ -33,10 +26,15 @@ function App() {
       account!
     );
 
-    if (!client || !account?.address()) return;
+    if (!client || !account?.address()) {
+      setClient(undefined);
+      setAccount(undefined);
+      return;
+    }
 
     setAccount(account);
     setClient(client);
+    setProviderName(walletName);
   };
 
   useEffect(() => {
@@ -48,18 +46,21 @@ function App() {
     if (!account) return;
 
     const address = await client.wallet().getBaseAccount()?.address();
+
     if (!address) return;
 
     const signatureFromProvider = await client
       .wallet()
       .signMessage("Test", address);
 
-    // we will use fake signature for now
     const res = await axios.post("http://localhost:3008/login", {
-      signature: fakeSignature.signature,
-      publicKey: fakeSignature.publicKey,
+      signature: signatureFromProvider.base58Encoded,
+      publicKey: signatureFromProvider.publicKey,
       message: "Test",
+      provider: providerName,
     });
+
+    console.log(res.data);
 
     if (res.data.isValid) {
       alert("You are connected");
