@@ -19,7 +19,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@massalabs/massa-web3": "^2.1.0",
+    "@massalabs/massa-web3": "^2.1.1-dev.20230818120947",
+    "@massalabs/wallet-provider": "^1.2.1-dev.20230818073036",
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
