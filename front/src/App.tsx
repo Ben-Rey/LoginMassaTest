@@ -10,6 +10,7 @@ function App() {
   const [account, setAccount] = useState<IAccount>();
   const [client, setClient] = useState<Client>();
   const [providerName, setProviderName] = useState<string>("BEARBY"); // ["BEARBY", "MASSASTATION"
+
   const setup = async (walletName = "MASSASTATION") => {
     const wallets = await providers();
 
@@ -42,6 +43,7 @@ function App() {
   }, []);
 
   const login = async () => {
+    const message = "test";
     if (!client) return;
     if (!account) return;
 
@@ -51,12 +53,14 @@ function App() {
 
     const signatureFromProvider = await client
       .wallet()
-      .signMessage("Test", address);
+      .signMessage(message, address);
+
+    console.log(signatureFromProvider);
 
     const res = await axios.post("http://localhost:3008/login", {
       signature: signatureFromProvider.base58Encoded,
       publicKey: signatureFromProvider.publicKey,
-      message: "Test",
+      message: message,
       provider: providerName,
     });
 
