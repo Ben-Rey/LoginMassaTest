@@ -10,6 +10,7 @@ function App() {
   const [account, setAccount] = useState<IAccount>();
   const [client, setClient] = useState<Client>();
   const [providerName, setProviderName] = useState<string>("BEARBY"); // ["BEARBY", "MASSASTATION"
+  const [message, setMessage] = useState<string>("test");
 
   const setup = async (walletName = "MASSASTATION") => {
     const wallets = await providers();
@@ -43,7 +44,6 @@ function App() {
   }, []);
 
   const login = async () => {
-    const message = "test";
     if (!client) return;
     if (!account) return;
 
@@ -88,6 +88,11 @@ function App() {
 
       {/* <button onClick={() => setup("BEARBY")}>Use Bearby</button> */}
       <button onClick={() => setup("MASSASTATION")}>Use MassaStation</button>
+      <input
+        type="text"
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
+      />
     </>
   );
 }
