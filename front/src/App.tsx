@@ -86,7 +86,7 @@ function App() {
         {connected ? "You are Connected" : "Connect"}
       </button>
 
-      <button onClick={() => setup("BEARBY")}>Use Bearby</button>
+      {/* <button onClick={() => setup("BEARBY")}>Use Bearby</button> */}
       <button onClick={() => setup("MASSASTATION")}>Use MassaStation</button>
     </>
   );
